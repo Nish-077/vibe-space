@@ -13,32 +13,32 @@ export const lucia = new Lucia(adapter, {
       secure: process.env.NODE_ENV === "production", // we use secure only when in prod since in dev, we use http://localhost which isnt secure.
     },
   },
-  getSessionAttributes(databaseSessionAttributes) {
-    //everytime we fetch session in frontend we get all the attributes as well and dont need to request to db again.
-    return {
-      id: databaseSessionAttributes.id,
-      userName: databaseSessionAttributes.userName,
-      displayName: databaseSessionAttributes.displayName,
-      avatarUrl: databaseSessionAttributes.avatarUrl,
-      googleId: databaseSessionAttributes.googleId,
-    };
-  },
+  // getSessionAttributes(databaseSessionAttributes) {
+  //   //everytime we fetch session in frontend we get all the attributes as well and dont need to request to db again.
+  //   return {
+  //     id: databaseSessionAttributes.id,
+  //     userName: databaseSessionAttributes.userName,
+  //     displayName: databaseSessionAttributes.displayName,
+  //     avatarUrl: databaseSessionAttributes.avatarUrl,
+  //     googleId: databaseSessionAttributes.googleId,
+  //   };
+  // },
 });
 
-declare module "lucia" {
-  interface Register {
-    Lucia: typeof Lucia;
-    DatabaseSessionAttributes: DatabaseSessionAttributes;
-  }
-}
+// declare module "lucia" {
+//   interface Register {
+//     Lucia: typeof Lucia;
+//     DatabaseSessionAttributes: DatabaseSessionAttributes;
+//   }
+// }
 
-interface DatabaseSessionAttributes {
-  id: string;
-  userName: string;
-  displayName: string;
-  avatarUrl: string | null;
-  googleId: string | null;
-}
+// interface DatabaseSessionAttributes {
+//   id: string;
+//   userName: string;
+//   displayName: string;
+//   avatarUrl: string | null;
+//   googleId: string | null;
+// }
 
 export const validateRequest = cache(
   // this doesnt cache session for multiple req but rather it creates a duplicate of the session that is recieved on every req and whenever different components of the web app need to validate the session, they recieve a duplicate of the session "cached" by this function so that we dont make a db request every time
@@ -74,7 +74,9 @@ export const validateRequest = cache(
           sessionCookie.attributes,
         );
       }
-    } catch {}
+    } catch (error) {
+      console.error("Error setting session cookie:", error);
+    }
     return result;
   },
 );

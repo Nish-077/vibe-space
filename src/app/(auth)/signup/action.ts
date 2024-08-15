@@ -65,20 +65,14 @@ export async function signUp(
       },
     });
 
-    const session = await lucia.createSession(userId, {
-      id: userId,
-      userName: userName,
-      displayName: userName,
-      avatarUrl: null,
-      googleId: null,
-    });
-
-    const sessionCookie = await lucia.createSessionCookie(session.id);
+    const session = await lucia.createSession(userId, {});
+    const sessionCookie = lucia.createSessionCookie(session.id);
     cookies().set(
       sessionCookie.name,
       sessionCookie.value,
       sessionCookie.attributes,
     );
+
 
     return redirect("/"); //imported from next/navigation. This func returns type 'never'. so the async funciton expecting 'error' as the return type will not cause an issue even if the return type is not exactly 'error'
   } catch (error) {

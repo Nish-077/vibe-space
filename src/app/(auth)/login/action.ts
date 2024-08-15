@@ -8,7 +8,6 @@ import { lucia } from "@/auth";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
-
 export async function login(
   credentials: LoginValues,
 ): Promise<{ error: string }> {
@@ -45,22 +44,16 @@ export async function login(
       };
     }
 
-    const session = await lucia.createSession(existingUser.id, {
-        id: existingUser.id,
-        userName: userName,
-        displayName: userName,
-        avatarUrl: null,
-        googleId: null,
-      });
-  
-      const sessionCookie = await lucia.createSessionCookie(session.id);
-      cookies().set(
-        sessionCookie.name,
-        sessionCookie.value,
-        sessionCookie.attributes,
-      );
+    const session = await lucia.createSession(existingUser.id, {});
 
-      return redirect("/");
+    const sessionCookie = lucia.createSessionCookie(session.id);
+    cookies().set(
+      sessionCookie.name,
+      sessionCookie.value,
+      sessionCookie.attributes,
+    );
+
+    return redirect("/");
   } catch (error) {
     if (isRedirectError(error)) throw error;
     console.error(error);

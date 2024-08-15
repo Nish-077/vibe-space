@@ -12,7 +12,7 @@ export const signUpSchema = z.object({
     .min(8, "Must be at least 8 characters")
     .regex(
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*\W).*$/,
-      "Must contain at least one lowercase letter, one uppercase letter, and one special character",
+      "Must contain at least 1 lowercase letter, 1 uppercase letter, and 1 special character",
     ),
 });
 
