@@ -73,7 +73,6 @@ export async function signUp(
       sessionCookie.attributes,
     );
 
-
     return redirect("/"); //imported from next/navigation. This func returns type 'never'. so the async funciton expecting 'error' as the return type will not cause an issue even if the return type is not exactly 'error'
   } catch (error) {
     if (isRedirectError(error)) throw error; //IMP: redirect func throws an error for redirecting and that will be caught by the catch block. so we check if its redirect error and throw it again for the redirect to work.

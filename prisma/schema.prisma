@@ -18,13 +18,14 @@ datasource db {
 model User {
   id           String    @id //every entry in db needs an id
   userName     String    @unique
-  displayName  String    //doesnt need to be unique
+  displayName  String //doesnt need to be unique
   email        String?   @unique //'?' represents optional since user can login with google login oother ways too
   passwordHash String?
   googleId     String?   @unique
   avatarUrl    String?
   bio          String?
-  sessions      Session[]
+  sessions     Session[]
+  posts      Post[]
 
   createdAt DateTime @default(now()) //automatically get the createdAt value
 
@@ -38,4 +39,15 @@ model Session {
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade) // cascade will delete sesison on when user deleted
 
   @@map("sessions")
+}
+
+model Post {
+  id      String @id @default(cuid())
+  content String
+  userId  String
+  user    User   @relation(fields: [userId], references: [id], onDelete: Cascade) // cascade will delete sesison on when user deleted
+
+  createdAt DateTime @default(now())
+
+  @@map("posts")
 }

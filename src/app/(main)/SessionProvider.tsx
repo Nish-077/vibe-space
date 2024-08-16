@@ -20,7 +20,9 @@ export default function SessionProvider({
 }
 
 export function useSession() {
+  // this custom hook can only be used inside the children wrapped within this SessionProvider or else will throw error
   const context = useContext(SessionContext);
+
   if (!context) {
     throw new Error("useSession must be used within a SessionProvider");
   }
