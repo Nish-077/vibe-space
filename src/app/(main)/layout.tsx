@@ -12,7 +12,7 @@ export default async function Layout({
   const session = await validateRequest();
 
   if (!session.user) redirect("/login");
-
+  //the second navbar is for when the website is opened in a mobile sized screen
   return (
     <SessionProvider value={session}>
       <div className="flex min-h-screen flex-col">
