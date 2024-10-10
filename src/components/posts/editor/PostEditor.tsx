@@ -3,10 +3,8 @@
 import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import PlaceHolder from "@tiptap/extension-placeholder";
-import { submitPost } from "./actions";
 import { useSession } from "@/app/(main)/SessionProvider";
 import UserAvatar from "@/components/UserAvatar";
-import { Button } from "@/components/ui/button";
 import "./styles.css";
 import { useSubmitPostMutation } from "./mutation";
 import LoadingButton from "@/components/LoadingButton";

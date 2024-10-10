@@ -4,7 +4,6 @@ import { validateRequest } from "@/auth";
 import prisma from "@/lib/prisma";
 import { postDataInclude } from "@/lib/types";
 import { createPostSchema } from "@/lib/validation";
-import { roundToNearestMinutes } from "date-fns";
 
 export async function submitPost(input: string) {
   const { user } = await validateRequest();

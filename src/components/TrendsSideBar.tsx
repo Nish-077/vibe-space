@@ -66,7 +66,7 @@ async function WhoToFollow() {
   );
 }
 
-//postgress's full text search is a very heavy operationandcant execute every single time, but we dont have static rendering as well
+//postgress's full text search is a very heavy operation and cant execute every single time, but we dont have static rendering as well
 
 const getTrendingTopics = unstable_cache(
   //this is nextjs feature and different from react's cache. this caches on server unlike react cache which cache's every req on client side. Allows us to cache btwn multiple reqs and btwn diff users
