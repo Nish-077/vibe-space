@@ -9,15 +9,24 @@ export async function GET(req: NextRequest) {
 
     if (!user) return Response.json({ error: "Unauthorised" }, { status: 401 });
 
-    const cursor = req.nextUrl.searchParams.get("cursor") || undefined; // id of post of next page
+    const cursor = req.nextUrl.searchParams.get("cursor") || undefined;
 
     const noOfPostsPerpage = 10;
 
     const posts = await prisma.post.findMany({
-      include: getPostDataInclude(user.id),
+      where: {
+        user: {
+          followers: {
+            some: {
+              followerId: user.id,
+            },
+          },
+        },
+      },
+      take: noOfPostsPerpage + 1,
       orderBy: { createdAt: "desc" },
-      take: noOfPostsPerpage + 1, //we r making pageCount posts per page, but since we also need cursor, which is the id of the next post after this page, we add +1
       cursor: cursor ? { id: cursor } : undefined,
+      include: getPostDataInclude(user.id),
     });
 
     const nextCursor = posts.length > noOfPostsPerpage ? posts[noOfPostsPerpage].id : null;
@@ -27,9 +36,9 @@ export async function GET(req: NextRequest) {
       nextCursor,
     };
 
-    return Response.json(data); //jsonifying a Date object inside the posts converts them to string. So that needs to be handled.
+    return Response.json(data);
   } catch (error) {
-    console.error();
+    console.error(error);
     return Response.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }

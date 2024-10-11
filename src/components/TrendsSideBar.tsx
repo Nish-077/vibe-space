@@ -1,13 +1,13 @@
 import { validateRequest } from "@/auth";
 import prisma from "@/lib/prisma";
-import { userDataSelect } from "@/lib/types";
+import { getUserDataSelect } from "@/lib/types";
 import { Loader2 } from "lucide-react";
 import Link from "next/link";
 import { Suspense } from "react";
 import UserAvatar from "./UserAvatar";
-import { Button } from "./ui/button";
 import { unstable_cache } from "next/cache";
 import { formatCount } from "@/lib/utils";
+import FollowButton from "./FollowButton";
 
 export default function TrendsSideBar() {
   //Since this is a server side component, it needs to load first. so when page gets reloaded, if for some reason server rendering is getting delayed, it will block the whole page reload which we dont want. So we add the Suspense component which shows a loading icon and rest of the page gets loaded
@@ -22,17 +22,22 @@ export default function TrendsSideBar() {
 }
 
 async function WhoToFollow() {
-  const { user } = await validateRequest();
+  const { user: loggedInUser } = await validateRequest();
 
-  if (!user) return;
+  if (!loggedInUser) return;
 
   const usersToFollow = await prisma.user.findMany({
     where: {
       NOT: {
-        id: user.id,
+        id: loggedInUser.id,
+      },
+      followers: {
+        none: {
+          followerId: loggedInUser.id,
+        },
       },
     },
-    select: userDataSelect,
+    select: getUserDataSelect(loggedInUser.id),
     take: 5,
   });
 
@@ -59,7 +64,16 @@ async function WhoToFollow() {
               </p>
             </div>
           </Link>
-          <Button>Follow</Button>
+          <FollowButton
+            userId={user.id}
+            userName={user.userName}
+            initialState={{
+              followersCount: user._count.followers,
+              isUserFollowing: user.followers.some(
+                ({ followerId }) => followerId === loggedInUser.id,
+              ),
+            }}
+          />
         </div>
       ))}
     </div>
