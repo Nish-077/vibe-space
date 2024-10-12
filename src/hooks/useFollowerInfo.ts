@@ -8,7 +8,7 @@ export default function useFollowerInfo(userId: string, initialState: FollowerIn
     queryFn: () =>
       kyInstance.get(`api/users/${userId}/followers`).json<FollowerInfo>(),
     initialData: initialState,
-    staleTime: Infinity, // cache time to infinity so that it doesnt automatically revalidate the request everytime
+    staleTime: Infinity, // cache time to infinity so that it doesnt automatically revalidate the request everytime and keeps the follower count fresh
   });
 
   return query;
