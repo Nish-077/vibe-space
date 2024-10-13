@@ -1,15 +1,16 @@
 import {
   InfiniteData,
   QueryFilters,
+  QueryKey,
   useMutation,
   useQueryClient,
 } from "@tanstack/react-query";
 import { useToast } from "../ui/use-toast";
 import { deletePost } from "./action";
-import { PostsPage } from "@/lib/types";
+import { PostData, PostsPage } from "@/lib/types";
 import { usePathname, useRouter } from "next/navigation";
 
-export function useDeletePostMutation() {
+export function useDeletePostMutation(post: PostData) {
   const { toast } = useToast();
 
   const queryClient = useQueryClient();
@@ -17,11 +18,22 @@ export function useDeletePostMutation() {
   const router = useRouter();
   const pathname = usePathname();
 
+  const queryKey: QueryKey = ["posts-count", post.user.id];
+
   const mutation = useMutation({
     mutationFn: deletePost,
+    onMutate: async () => {
+      await queryClient.cancelQueries({ queryKey });
+
+      const prevState = queryClient.getQueryData<number>(queryKey);
+
+      queryClient.setQueryData<number>(queryKey, (prevState ?? 0) - 1);
+
+      return { prevState };
+    },
     onSuccess: async (deletedPost) => {
       const queryFilter: QueryFilters = { queryKey: ["post-feed"] };
-      
+
       await queryClient.cancelQueries(queryFilter);
 
       queryClient.setQueriesData<InfiniteData<PostsPage, string | null>>(
@@ -46,10 +58,10 @@ export function useDeletePostMutation() {
       if (pathname === `/posts/${deletedPost.id}`) {
         router.push(`/users/${deletedPost.user.userName}`);
       }
-
     },
-    onError: (error) => {
+    onError: (error, variables, context) => {
       console.error(error);
+      queryClient.setQueryData<number>(queryKey, context?.prevState);
       toast({
         variant: "destructive",
         description: "Failed to delete post. Please try again later",

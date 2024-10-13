@@ -5,18 +5,13 @@ import TrendsSideBar from "@/components/TrendsSideBar";
 import { Button } from "@/components/ui/button";
 import UserAvatar from "@/components/UserAvatar";
 import prisma from "@/lib/prisma";
-import {
-  FollowerInfo,
-  getUserDataSelect,
-  UserData,
-} from "@/lib/types";
-import { formatCount } from "@/lib/utils";
+import { FollowerInfo, getUserDataSelect, UserData } from "@/lib/types";
 import { formatDate } from "date-fns";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { cache } from "react";
 import UserPosts from "./UserPosts";
-
+import PostsCount from "@/components/PostsCount";
 
 const getUser = cache(async (userName: string, loggedInUserId: string) => {
   const user = await prisma.user.findFirst({
@@ -34,11 +29,9 @@ const getUser = cache(async (userName: string, loggedInUserId: string) => {
   return user;
 });
 
-
 interface PageProps {
   params: { userName: string };
 }
-
 
 export async function generateMetadata({
   params: { userName },
@@ -54,12 +47,10 @@ export async function generateMetadata({
   };
 }
 
-
 interface UserProfileProps {
   user: UserData;
   loggedInUserId: string;
 }
-
 
 async function UserProfile({ user, loggedInUserId }: UserProfileProps) {
   const followerInfo: FollowerInfo = {
@@ -85,13 +76,11 @@ async function UserProfile({ user, loggedInUserId }: UserProfileProps) {
           </div>
           <div>Member since {formatDate(user.createdAt, "MMM d, yyyy")}</div>
           <div className="flex items-center gap-3">
-            <span>
-              Posts:{" "}
-              <span className="font-semibold">
-                {formatCount(user._count.posts)}
-              </span>
-            </span>
-            <FollowersCount userId={user.id} initialState={followerInfo} />{" "}
+            <PostsCount
+              userId={user.id}
+              initialPostsCount={user._count.posts}
+            />
+            <FollowersCount userId={user.id} initialState={followerInfo} />
             {/*we make seperate component cuz we need optimistic updates on follower count which we get by using useFollowerInfo hook. A hook cannot be used in a server component, hence we create a seperate client component.*/}
           </div>
         </div>
@@ -116,7 +105,6 @@ async function UserProfile({ user, loggedInUserId }: UserProfileProps) {
     </div>
   );
 }
-
 
 export default async function Page({ params: { userName } }: PageProps) {
   const { user: loggedInUser } = await validateRequest();

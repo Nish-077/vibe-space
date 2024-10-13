@@ -22,7 +22,7 @@ export default function DeletePostDialog({
   open,
   onClose,
 }: DeletePostDialogProps) {
-  const mutation = useDeletePostMutation();
+  const mutation = useDeletePostMutation(post);
 
   function handleOpenChange(open: boolean) {
     if (!open || !mutation.isPending) {

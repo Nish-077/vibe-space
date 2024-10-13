@@ -3,6 +3,7 @@ import { submitPost } from "./actions";
 import {
   InfiniteData,
   QueryFilters,
+  QueryKey,
   useMutation,
   useQueryClient,
 } from "@tanstack/react-query";
@@ -16,8 +17,19 @@ export function useSubmitPostMutation() {
 
   const { user } = useSession();
 
+  const queryKey: QueryKey = ["posts-count", user.id];
+
   const mutation = useMutation({
     mutationFn: submitPost,
+    onMutate: async () => {
+      await queryClient.cancelQueries({ queryKey });
+
+      const prevState = queryClient.getQueryData<number>(queryKey);
+
+      queryClient.setQueryData<number>(queryKey, (prevState ?? 0) + 1);
+
+      return { prevState };
+    },
     onSuccess: async (newPost) => {
       //We can use react-query's queryClient to invalidate the cache and refetch all posts again but, doing so will invalidate all pages that use same query key from cache, cached during infinite query loading. Hence, its better to return the new post into the cache manually by ourselves.
       const queryFilter = {
@@ -64,8 +76,11 @@ export function useSubmitPostMutation() {
         description: "Posted Created Successfully!",
       });
     },
-    onError(error) {
+    onError(error, variables, context) {
       console.error(error);
+
+      queryClient.setQueryData<number>(queryKey, context?.prevState);
+      
       toast({
         variant: "destructive",
         description: "Failed to Post. Pleast try again later",
