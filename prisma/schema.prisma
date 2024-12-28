@@ -16,7 +16,7 @@ datasource db {
 }
 
 model User {
-  id           String    @id //every entry in db needs an id
+  id           String    @id //@id referes to primary key of the relation
   userName     String    @unique
   displayName  String //doesnt need to be unique
   email        String?   @unique //'?' represents optional since user can login with google login oother ways too
