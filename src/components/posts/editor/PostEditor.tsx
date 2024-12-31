@@ -24,6 +24,7 @@ export default function PostEditor() {
         placeholder: "Erm, what the sigma?",
       }),
     ],
+    immediatelyRender: false,
   });
 
   const input =

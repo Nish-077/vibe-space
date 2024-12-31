@@ -8,6 +8,7 @@ import UserAvatar from "./UserAvatar";
 import { unstable_cache } from "next/cache";
 import { formatCount } from "@/lib/utils";
 import FollowButton from "./FollowButton";
+import UserToolTip from "./UserToolTip";
 
 export default function TrendsSideBar() {
   //Since this is a server side component, it needs to load first. so when page gets reloaded, if for some reason server rendering is getting delayed, it will block the whole page reload which we dont want. So we add the Suspense component which shows a loading icon and rest of the page gets loaded
@@ -46,24 +47,26 @@ async function WhoToFollow() {
       <div className="text-xl font-bold">Who to Follow</div>
       {usersToFollow.map((user) => (
         <div key={user.id} className="flex items-center justify-between gap-3">
-          <Link
-            href={`/users/${user.userName}`}
-            className="flex items-center gap-3"
-          >
-            <UserAvatar
-              avatarUrl={user.avatarUrl}
-              displayName={user.displayName}
-              classname="flex-none"
-            />
-            <div>
-              <p className="line-clamp-1 break-all font-semibold hover:underline">
-                {user.displayName}
-              </p>
-              <p className="line-clamp-1 break-all text-muted-foreground">
-                @{user.userName}
-              </p>
-            </div>
-          </Link>
+          <UserToolTip user={user}>
+            <Link
+              href={`/users/${user.userName}`}
+              className="flex items-center gap-3"
+            >
+              <UserAvatar
+                avatarUrl={user.avatarUrl}
+                displayName={user.displayName}
+                classname="flex-none"
+              />
+              <div>
+                <p className="line-clamp-1 break-all font-semibold hover:underline">
+                  {user.displayName}
+                </p>
+                <p className="line-clamp-1 break-all text-muted-foreground">
+                  @{user.userName}
+                </p>
+              </div>
+            </Link>
+          </UserToolTip>
           <FollowButton
             userId={user.id}
             userName={user.userName}

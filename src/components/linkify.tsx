@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { LinkIt, LinkItUrl } from "react-linkify-it";
+import UserLinkWithToolTip from "./UserLinkWithToolTip";
 
 interface LinkifyProps {
   children: React.ReactNode;
@@ -30,13 +31,9 @@ function LinkifyUserName({ children }: LinkifyProps) {
         const userName = match.slice(1);
 
         return (
-          <Link
-            key={key}
-            href={`/users/${userName}`}
-            className="text-primary hover:underline"
-          >
+          <UserLinkWithToolTip key={key} userName={userName}>
             {match}
-          </Link>
+          </UserLinkWithToolTip>
         );
       }}
     >
