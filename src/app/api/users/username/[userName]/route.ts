@@ -4,9 +4,11 @@ import { getUserDataSelect } from "@/lib/types";
 
 export async function GET(
   req: Request,
-  { params: { userName } }: { params: { userName: string } },
+  context: { params: { userName: string } },
 ) {
   try {
+    const { params } = context;
+    const { userName } = await params;
     const { user: loggedInUser } = await validateRequest();
 
     if (!loggedInUser)
